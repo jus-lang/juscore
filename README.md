@@ -6,8 +6,8 @@ para smart contracts em Tezos voltada a desenvolvimento agêntico e
 verificável.
 
 - Programa de pesquisa: [jus-lang/jus](https://codeberg.org/jus-lang/jus)
-- Definição da linguagem: [docs/juscore-v0.1-language-definition.md](docs/juscore-v0.1-language-definition.md)
-- Arquitetura da implementação: [docs/juscore-v0.1-architecture.md](docs/juscore-v0.1-architecture.md)
+- Definição da linguagem: [docs/juscore-language-definition.md](docs/juscore-language-definition.md)
+- Arquitetura da implementação: [docs/juscore-architecture.md](docs/juscore-architecture.md)
 - Instruções para agentes: [AGENTS.md](AGENTS.md)
 
 ## Ambiente
