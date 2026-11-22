@@ -1,12 +1,12 @@
 # Arquitetura da implementação do JusCore v0.1
 
-| | |
-|---|---|
-| **Status** | Rascunho para discussão (`0.1-draft3`) |
-| **Data** | 2026-11-22 |
-| **Responsável** | Jefferson O. Andrade |
-| **Público** | Grupo Jus; agentes de IA que irão gerar o código |
-| **Documentos relacionados** | *JusCore v0.1 — Definição da Linguagem* (normativa para a linguagem); README do programa; *Protocolo experimental* (a escrever) |
+|                             |                                                                                                                                                       |
+|-----------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Status**                  | Rascunho para discussão (`0.1-draft4`)                                                                                                                |
+| **Data**                    | 2026-11-22                                                                                                                                            |
+| **Responsável**             | Jefferson O. Andrade                                                                                                                                  |
+| **Público**                 | Grupo Jus; agentes de IA que irão gerar o código                                                                                                      |
+| **Documentos relacionados** | *JusCore v0.1 — Definição da Linguagem* (normativa para a linguagem); README do programa; *Protocolo experimental — Estudo 1* (`juscore-experiments`) |
 
 ---
 
@@ -26,13 +26,13 @@ Os trechos de OCaml são **esboços de interface**. Os nomes podem mudar durante
 
 ## 1. Terminologia
 
-| Termo | Significado |
-|---|---|
-| **Implementação do JusCore** | Todo o software deste documento. É distribuída como a ferramenta de linha de comando `jus` |
-| **Front-end** | Lexer, parser, resolução de nomes, type checker e diagnósticos. Recebe código-fonte e produz uma AST tipada ou uma lista de diagnósticos |
-| **Interpretador de referência** | Executa a AST tipada segundo a semântica normativa (definição §8). Existe desde o v0.1 e é permanente |
-| **Backend Michelson** | Gera código Michelson a partir da AST tipada. Vem depois do primeiro artigo |
-| **Compilador** | Em sentido estrito, front-end mais backend. Não é usado como sinônimo da implementação inteira |
+| Termo                           | Significado                                                                                                                              |
+|---------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
+| **Implementação do JusCore**    | Todo o software deste documento. É distribuída como a ferramenta de linha de comando `jus`                                               |
+| **Front-end**                   | Lexer, parser, resolução de nomes, type checker e diagnósticos. Recebe código-fonte e produz uma AST tipada ou uma lista de diagnósticos |
+| **Interpretador de referência** | Executa a AST tipada segundo a semântica normativa (definição §8). Existe desde o v0.1 e é permanente                                    |
+| **Backend Michelson**           | Gera código Michelson a partir da AST tipada. Vem depois do primeiro artigo                                                              |
+| **Compilador**                  | Em sentido estrito, front-end mais backend. Não é usado como sinônimo da implementação inteira                                           |
 
 O interpretador não é um substituto provisório do backend. Ele tem três funções permanentes:
 
@@ -74,19 +74,19 @@ O fluxo tem três características importantes:
 
 ## 3. Pilha tecnológica
 
-| Item | Escolha | Observação |
-|---|---|---|
-| Linguagem | OCaml 5 | Série fixada no `flake.nix`: 5.4, ou 5.3 se alguma dependência não compilar com a 5.4 (§3.1) |
-| Ambiente | Nix com flakes | `flake.nix` e `flake.lock` no repositório (§3.1) |
-| Build | dune | Inclui os testes (`dune test`) |
-| Lexer | ocamllex | Trabalha em bytes, o que é coerente com as colunas em bytes da definição §10.1 |
-| Parser | Menhir | Com a API incremental, para mensagens de erro com tokens esperados |
-| Números | Zarith | Para `Nat`, `Tez` e `Timestamp`. O `int` nativo do OCaml tem 63 bits e não comporta o limite de `Tez` (2^63−1 mutez) |
-| JSON | Yojson | Saída de diagnósticos e de AST |
-| Linha de comando | Cmdliner | |
-| Testes de unidade | Alcotest | |
-| Testes de saída | testes *cram* do dune | Para congelar a saída textual da CLI |
-| Formatação | ocamlformat | Configuração versionada no repositório |
+| Item              | Escolha               | Observação                                                                                                           |
+|-------------------|-----------------------|----------------------------------------------------------------------------------------------------------------------|
+| Linguagem         | OCaml 5               | Série fixada no `flake.nix`: 5.4, ou 5.3 se alguma dependência não compilar com a 5.4 (§3.1)                         |
+| Ambiente          | Nix com flakes        | `flake.nix` e `flake.lock` no repositório (§3.1)                                                                     |
+| Build             | dune                  | Inclui os testes (`dune test`)                                                                                       |
+| Lexer             | ocamllex              | Trabalha em bytes, o que é coerente com as colunas em bytes da definição §10.1                                       |
+| Parser            | Menhir                | Com a API incremental, para mensagens de erro com tokens esperados                                                   |
+| Números           | Zarith                | Para `Nat`, `Tez` e `Timestamp`. O `int` nativo do OCaml tem 63 bits e não comporta o limite de `Tez` (2^63−1 mutez) |
+| JSON              | Yojson                | Saída de diagnósticos e de AST                                                                                       |
+| Linha de comando  | Cmdliner              |                                                                                                                      |
+| Testes de unidade | Alcotest              |                                                                                                                      |
+| Testes de saída   | testes *cram* do dune | Para congelar a saída textual da CLI                                                                                 |
+| Formatação        | ocamlformat           | Configuração versionada no repositório                                                                               |
 
 Restrições:
 
@@ -99,10 +99,10 @@ Restrições:
 
 O ambiente é definido por dois arquivos na raiz do repositório:
 
-| Arquivo | Função |
-|---|---|
-| `flake.nix` | **Quais** pacotes compõem o ambiente (compilador, bibliotecas e ferramentas) e **qual** série do OCaml é usada |
-| `flake.lock` | **Qual revisão** do nixpkgs fornece esses pacotes. É gerado pelo Nix e fixa as versões exatas |
+| Arquivo      | Função                                                                                                         |
+|--------------|----------------------------------------------------------------------------------------------------------------|
+| `flake.nix`  | **Quais** pacotes compõem o ambiente (compilador, bibliotecas e ferramentas) e **qual** série do OCaml é usada |
+| `flake.lock` | **Qual revisão** do nixpkgs fornece esses pacotes. É gerado pelo Nix e fixa as versões exatas                  |
 
 Uso:
 
@@ -152,10 +152,10 @@ sequenceDiagram
 
 **Opções no Codeberg:**
 
-| Opção | Como funciona | Situação |
-|---|---|---|
+| Opção                                 | Como funciona                                                                                                          | Situação                                                                                                                                                 |
+|---------------------------------------|------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **Woodpecker CI** (`ci.codeberg.org`) | Hospedado pelo Codeberg. Configurado por um arquivo `.woodpecker/*.yaml` no repositório. Cada passo roda num contêiner | Exige pedir acesso por formulário; depois de aprovado, ativa-se o repositório em `ci.codeberg.org`. É a opção que o Codeberg recomenda para CI hospedada |
-| **Forgejo Actions** | Sintaxe parecida com a do GitHub Actions, em `.forgejo/workflows/*.yml` | O Codeberg oferece executores hospedados só de forma limitada. A alternativa é registrar um executor próprio (por exemplo, numa máquina do laboratório) |
+| **Forgejo Actions**                   | Sintaxe parecida com a do GitHub Actions, em `.forgejo/workflows/*.yml`                                                | O Codeberg oferece executores hospedados só de forma limitada. A alternativa é registrar um executor próprio (por exemplo, numa máquina do laboratório)  |
 
 **Proposta:** pedir acesso ao Woodpecker do Codeberg; se o acesso demorar, o plano B é um executor Forgejo próprio.
 
@@ -323,6 +323,7 @@ Requisitos:
 type t = E001 | E002 | (* ... *) | W603 | R001 | (* ... *) | R007
 val to_string : t -> string               (* "E301" *)
 val severity  : t -> [ `Error | `Warning ]
+val explanation : t -> string             (* texto fixo por código, usado pela variante D3 do protocolo *)
 val all       : t list                    (* usado em teste de completude *)
 
 (* diagnostic.ml — registro interno da definição §10.1 *)
@@ -475,22 +476,22 @@ jus diagnostics --list
 jus version
 ```
 
-| Comando | Função |
-|---|---|
-| `check` | Roda o front-end e imprime os diagnósticos no renderizador escolhido (padrão: `human`) |
-| `run` | Checa o contrato referenciado pelo cenário, executa as chamadas e verifica as expectativas |
-| `ast` | Serializa a AST (ou a AST tipada, com `--typed`) em JSON |
-| `diagnostics --list` | Lista os renderizadores registrados, incluindo as variantes experimentais |
-| `version` | Mostra a versão da ferramenta e as versões da definição e desta arquitetura que ela implementa |
+| Comando              | Função                                                                                         |
+|----------------------|------------------------------------------------------------------------------------------------|
+| `check`              | Roda o front-end e imprime os diagnósticos no renderizador escolhido (padrão: `human`)         |
+| `run`                | Checa o contrato referenciado pelo cenário, executa as chamadas e verifica as expectativas     |
+| `ast`                | Serializa a AST (ou a AST tipada, com `--typed`) em JSON                                       |
+| `diagnostics --list` | Lista os renderizadores registrados, incluindo as variantes experimentais                      |
+| `version`            | Mostra a versão da ferramenta e as versões da definição e desta arquitetura que ela implementa |
 
 **Códigos de saída:**
 
-| Código | Significado |
-|---|---|
-| 0 | Sucesso, sem erros (pode haver avisos) |
-| 1 | Erros de compilação |
-| 2 | Pelo menos uma expectativa de cenário falhou |
-| 3 | Erro de uso ou erro interno |
+| Código | Significado                                  |
+|--------|----------------------------------------------|
+| 0      | Sucesso, sem erros (pode haver avisos)       |
+| 1      | Erros de compilação                          |
+| 2      | Pelo menos uma expectativa de cenário falhou |
+| 3      | Erro de uso ou erro interno                  |
 
 **Saída determinística:** a mesma entrada **DEVE** produzir a mesma saída, byte a byte. Os diagnósticos saem ordenados; não há horários nem caminhos absolutos na saída. Isso é necessário para os testes *cram* e para a reprodutibilidade dos experimentos.
 
@@ -544,16 +545,16 @@ Os não terminais `expr` e `args` são os da definição §4.3, e os tokens são
 
 ### 8.3 Significado
 
-| Elemento | Significado |
-|---|---|
-| `contract` | Caminho do contrato, relativo ao arquivo de cenário. Se o contrato tiver erros de compilação, o cenário não roda e `jus run` termina com código 1 |
-| `set self` | Endereço do contrato (padrão: `@KT1Self`) |
-| `set balance` | Saldo inicial do contrato, do tipo `Tez` (padrão: `0mutez`) |
-| `set storage` | Obrigatório. Expressão checada contra o tipo `Storage` do contrato e avaliada sem `storage`, `ctx` nem `result` |
-| `call e(args) with r` | Executa uma transação (definição §8.4). Os argumentos são checados contra os parâmetros do entry. `r` é checado contra o registro embutido `CallContext`, com os campos `sender : Address`, `amount : Tez` e `time : Nat` (segundos; vira `ctx.now`) |
-| `expect succeeds` | A última chamada terminou sem abort |
-| `expect fails Rnnn [msg]` | A última chamada abortou com esse código e, se a mensagem for dada, com essa mensagem |
-| `expect e` | `e` é checada contra `Bool` e deve dar `true` |
+| Elemento                  | Significado                                                                                                                                                                                                                                          |
+|---------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `contract`                | Caminho do contrato, relativo ao arquivo de cenário. Se o contrato tiver erros de compilação, o cenário não roda e `jus run` termina com código 1                                                                                                    |
+| `set self`                | Endereço do contrato (padrão: `@KT1Self`)                                                                                                                                                                                                            |
+| `set balance`             | Saldo inicial do contrato, do tipo `Tez` (padrão: `0mutez`)                                                                                                                                                                                          |
+| `set storage`             | Obrigatório. Expressão checada contra o tipo `Storage` do contrato e avaliada sem `storage`, `ctx` nem `result`                                                                                                                                      |
+| `call e(args) with r`     | Executa uma transação (definição §8.4). Os argumentos são checados contra os parâmetros do entry. `r` é checado contra o registro embutido `CallContext`, com os campos `sender : Address`, `amount : Tez` e `time : Nat` (segundos; vira `ctx.now`) |
+| `expect succeeds`         | A última chamada terminou sem abort                                                                                                                                                                                                                  |
+| `expect fails Rnnn [msg]` | A última chamada abortou com esse código e, se a mensagem for dada, com essa mensagem                                                                                                                                                                |
+| `expect e`                | `e` é checada contra `Bool` e deve dar `true`                                                                                                                                                                                                        |
 
 **Ambiente das expressões em `expect e`:**
 
@@ -660,14 +661,14 @@ flowchart LR
   M3 --> M5[M5 Renderizadores e sugestões]
 ```
 
-| Marco | Escopo | Critério de aceitação |
-|---|---|---|
-| **M0** Esqueleto | `flake.nix` com a série do OCaml confirmada, `flake.lock`, CI, `dune-project`, bibliotecas vazias com interfaces (`.mli`) da §5 e §6, CLI com `version` e `diagnostics --list`, `Loc`, `Code`, `Diagnostic`, renderizador `json` | `dune build` e `dune test` passam; teste de completude de `Code.all` passa |
-| **M1** Lexer e parser | §5.2 a §5.4; `jus ast --json` | Os três contratos de referência fazem parsing; casos de conformidade E0xx e E1xx passam |
-| **M2** Declarações e nomes | §5.7; erros de nomes em expressões | Casos E2xx, E5xx, E309 e E311 passam |
-| **M3** Type checker | §5.8 e §5.9 | Casos E3xx, E4xx, E6xx e W passam; os três contratos de referência são aceitos sem diagnósticos |
-| **M4** Interpretador e cenários | §6 e §8; `jus run` | Casos R passam; todos os cenários de `test/contracts/` passam |
-| **M5** Renderizadores e sugestões | renderizador `human`, sugestões e correções (§5.5), variantes do protocolo | Testes cram passam; exemplos da definição §10.5 e §11.4 reproduzidos |
+| Marco                             | Escopo                                                                                                                                                                                                                           | Critério de aceitação                                                                           |
+|-----------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
+| **M0** Esqueleto                  | `flake.nix` com a série do OCaml confirmada, `flake.lock`, CI, `dune-project`, bibliotecas vazias com interfaces (`.mli`) da §5 e §6, CLI com `version` e `diagnostics --list`, `Loc`, `Code`, `Diagnostic`, renderizador `json` | `dune build` e `dune test` passam; teste de completude de `Code.all` passa                      |
+| **M1** Lexer e parser             | §5.2 a §5.4; `jus ast --json`                                                                                                                                                                                                    | Os três contratos de referência fazem parsing; casos de conformidade E0xx e E1xx passam         |
+| **M2** Declarações e nomes        | §5.7; erros de nomes em expressões                                                                                                                                                                                               | Casos E2xx, E5xx, E309 e E311 passam                                                            |
+| **M3** Type checker               | §5.8 e §5.9                                                                                                                                                                                                                      | Casos E3xx, E4xx, E6xx e W passam; os três contratos de referência são aceitos sem diagnósticos |
+| **M4** Interpretador e cenários   | §6 e §8; `jus run`                                                                                                                                                                                                               | Casos R passam; todos os cenários de `test/contracts/` passam                                   |
+| **M5** Renderizadores e sugestões | renderizador `human`, sugestões e correções (§5.5), variantes do protocolo                                                                                                                                                       | Testes cram passam; exemplos da definição §10.5 e §11.4 reproduzidos                            |
 
 O M5 pode andar em paralelo com o M4. As variantes experimentais dependem do protocolo experimental.
 
@@ -700,8 +701,8 @@ Esse registro serve à reprodutibilidade e é material direto para a dissertaç�
 # Instruções para agentes
 
 Leia antes de qualquer alteração:
-- docs/juscore-v0.1-language-definition.md (normativo para a linguagem)
-- docs/juscore-v0.1-architecture.md (normativo para a implementação)
+- docs/juscore-language-definition.md (normativo para a linguagem)
+- docs/juscore-architecture.md (normativo para a implementação)
 
 Regras:
 1. Não altere arquivos em test/conformance/ nem em test/contracts/ sem
@@ -722,16 +723,16 @@ Regras:
 
 ## 12. Questões abertas e decisões
 
-| # | Questão | Situação |
-|---|---|---|
-| A1 | Onde fica o repositório da implementação | **Decidido:** `codeberg.org/jus-lang/juscore`, um único repositório para toda a implementação (front-end, interpretador e, depois, backend), com os documentos normativos em `docs/`. O repositório `jus-lang/interpreter` é arquivado como legado (§13). A organização geral dos repositórios está no README do programa |
-| A2 | Versão exata do OCaml e das dependências | **Decidido:** OCaml 5, com o ambiente em Nix com flakes; versões fixadas pelo `flake.lock` (§3.1) |
-| A3 | Integração contínua | **Decidido em princípio:** Woodpecker do Codeberg, com imagem oficial do Nix (§3.2); plano B: executor Forgejo próprio |
-| A4 | Ferramenta de agente usada na geração | A decidir na reunião com o Gelinton (terça-feira, 2026-11-24) |
-| A5 | Executar Michelson fora da blockchain nos testes diferenciais | **Decidido:** avaliar quando o backend começar |
-| A6 | Recuperação de erros de sintaxe | **Decidido:** depois do v0.1, se os experimentos mostrarem que importa |
-| A7 | Sistema operacional de cada participante | O Nix roda em Linux, macOS e WSL2; confirmar o sistema do Gelinton só para as instruções de instalação |
-| A8 | OCaml 5.4 ou 5.3 | No M0: 5.4, se todas as dependências compilarem com ela na revisão fixada; senão, 5.3 |
+| #  | Questão                                                       | Situação                                                                                                                                                                                                                                                                                                                  |
+|----|---------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| A1 | Onde fica o repositório da implementação                      | **Decidido:** `codeberg.org/jus-lang/juscore`, um único repositório para toda a implementação (front-end, interpretador e, depois, backend), com os documentos normativos em `docs/`. O repositório `jus-lang/interpreter` é arquivado como legado (§13). A organização geral dos repositórios está no README do programa |
+| A2 | Versão exata do OCaml e das dependências                      | **Decidido:** OCaml 5, com o ambiente em Nix com flakes; versões fixadas pelo `flake.lock` (§3.1)                                                                                                                                                                                                                         |
+| A3 | Integração contínua                                           | **Decidido em princípio:** Woodpecker do Codeberg, com imagem oficial do Nix (§3.2); plano B: executor Forgejo próprio                                                                                                                                                                                                    |
+| A4 | Ferramenta de agente usada na geração                         | A decidir na reunião com o Gelinton (terça-feira, 2026-11-24)                                                                                                                                                                                                                                                             |
+| A5 | Executar Michelson fora da blockchain nos testes diferenciais | **Decidido:** avaliar quando o backend começar                                                                                                                                                                                                                                                                            |
+| A6 | Recuperação de erros de sintaxe                               | **Decidido:** depois do v0.1, se os experimentos mostrarem que importa                                                                                                                                                                                                                                                    |
+| A7 | Sistema operacional de cada participante                      | O Nix roda em Linux, macOS e WSL2; confirmar o sistema do Gelinton só para as instruções de instalação                                                                                                                                                                                                                    |
+| A8 | OCaml 5.4 ou 5.3                                              | **Decidido:** 5.4. Testado em 2026-11-22: `nix develop` montou o ambiente com OCaml 5.4.1 e dune 3.21.1                                                                                                                                                                                                                   |
 
 ---
 
@@ -779,3 +780,4 @@ Praticamente nenhuma decisão de design coincide com a definição do JusCore v0
 - `0.1-draft1` (2026-11-22): primeira versão completa para discussão.
 - `0.1-draft2` (2026-11-22): ambiente com GNU Guix e OCaml 4.14 (§3.1); integração contínua (§3.2); questões A1–A7 atualizadas (§12); análise do protótipo legado em Java (§13).
 - `0.1-draft3` (2026-11-22): Guix substituído por Nix com flakes, com OCaml 5 (§3.1); CI com imagem do Nix (§3.2); A1 decidida (um repositório para toda a implementação); nova questão A8.
+- `0.1-draft4` (2026-11-22): A8 decidida (OCaml 5.4); `Code.explanation` acrescentado para a variante D3 do protocolo experimental.

@@ -1,8 +1,8 @@
 # Instruções para agentes
 
 Leia antes de qualquer alteração:
-- docs/juscore-v0.1-language-definition.md (normativo para a linguagem)
-- docs/juscore-v0.1-architecture.md (normativo para a implementação)
+- docs/juscore-language-definition.md (normativo para a linguagem)
+- docs/juscore-architecture.md (normativo para a implementação)
 
 Regras:
 1. Não altere arquivos em test/conformance/ nem em test/contracts/ sem

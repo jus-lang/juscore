@@ -1,12 +1,12 @@
 # JusCore v0.1 — Definição da Linguagem
 
-|                             |                                                                                                            |
-|---|---|
-| **Status** | Rascunho para discussão (`0.1-draft3`) |
-| **Data**                    | 2026-11-22                                                                                                 |
-| **Responsável**             | Jefferson O. Andrade                                                                                       |
-| **Público**                 | Grupo Jus; agentes de IA que irão gerar o front-end e o interpretador                                      |
-| **Documentos relacionados** | README do programa Jus (v4); *Arquitetura da implementação do JusCore* (`0.1-draft1`); *Protocolo experimental* (a escrever) |
+|                             |                                                                                                                              |
+|-----------------------------|------------------------------------------------------------------------------------------------------------------------------|
+| **Status**                  | Rascunho para discussão (`0.1-draft3`)                                                                                       |
+| **Data**                    | 2026-11-22                                                                                                                   |
+| **Responsável**             | Jefferson O. Andrade                                                                                                         |
+| **Público**                 | Grupo Jus; agentes de IA que irão gerar o front-end e o interpretador                                                        |
+| **Documentos relacionados** | README do programa Jus (v7); *Arquitetura da implementação do JusCore* (`0.1-draft4`); *Protocolo experimental — Estudo 1* (`juscore-experiments`) |
 
 ---
 
@@ -58,7 +58,7 @@ Qualquer alteração neste documento deve ser registrada como decisão de design
 Decisões de design validadas em 2026-11-22. As marcadas com **REVISAR** valem para o v0.1, mas devem ser reavaliadas antes do v0.2. O gatilho indica o que deve motivar a reavaliação.
 
 | #  | Decisão                                                                     | Situação                           | Gatilho para revisão                                                                                                                                         |
-|---|---|---|---|
+|----|-----------------------------------------------------------------------------|------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | D1 | Sintaxe de chamada `f(a, b)`, e não justaposição `f a b`                    | Validada                           | —                                                                                                                                                            |
 | D2 | Sintaxe insensível a layout, com blocos terminados por `end`                | Validada                           | —                                                                                                                                                            |
 | D3 | `storage`, `ctx` e `result` implícitos nos entries; retorno sempre `Result` | Validada                           | —                                                                                                                                                            |
@@ -143,13 +143,13 @@ Os nomes `storage`, `ctx` e `result` não são palavras-chave, mas são **reserv
 
 ### 3.5 Literais
 
-| Literal | Forma | Tipo | Observações |
-|---|---|---|---|
-| Booleano | `true`, `false` | `Bool` | |
-| Natural | `[0-9][0-9_]*` | `Nat` | Precisão arbitrária; `_` é separador visual (`1_000`) |
-| Tez | `NAT tz` ou `NAT mutez` (sem espaço) | `Tez` | `5tz` = 5 000 000 mutez; `250mutez`. Estouro de 2^63−1 mutez gera E004 |
-| String | `"..."` | `String` | Escapes: `\"`, `\\`, `\n`. Outros escapes geram E005; string não terminada gera E002 |
-| Endereço | `@[A-Za-z0-9]+` | `Address` | Ex.: `@tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb`. O v0.1 não valida o checksum |
+| Literal  | Forma                                | Tipo      | Observações                                                                          |
+|----------|--------------------------------------|-----------|--------------------------------------------------------------------------------------|
+| Booleano | `true`, `false`                      | `Bool`    |                                                                                      |
+| Natural  | `[0-9][0-9_]*`                       | `Nat`     | Precisão arbitrária; `_` é separador visual (`1_000`)                                |
+| Tez      | `NAT tz` ou `NAT mutez` (sem espaço) | `Tez`     | `5tz` = 5 000 000 mutez; `250mutez`. Estouro de 2^63−1 mutez gera E004               |
+| String   | `"..."`                              | `String`  | Escapes: `\"`, `\\`, `\n`. Outros escapes geram E005; string não terminada gera E002 |
+| Endereço | `@[A-Za-z0-9]+`                      | `Address` | Ex.: `@tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb`. O v0.1 não valida o checksum           |
 
 Um literal numérico seguido de letras que não formem `tz` ou `mutez` gera E004 (ex.: `5tez`).
 
@@ -259,18 +259,18 @@ Observações:
 
 ### 5.1 Tipos embutidos
 
-| Tipo | Valores | Comparável (§5.4) |
-|---|---|---|
-| `Bool` | `true`, `false` | `==`, `!=` |
-| `Nat` | naturais de precisão arbitrária | ordem total |
-| `Tez` | inteiros de 0 a 2^63−1, em mutez | ordem total |
-| `String` | sequências de bytes UTF-8 | ordem total (lexicográfica por bytes) |
-| `Address` | endereços opacos | `==`, `!=` |
-| `Timestamp` | segundos desde a época Unix | ordem total |
-| `Option[T]` | `Some(v)`, `None` | não |
-| `List[T]` | listas finitas | não |
-| `Map[K, V]` | mapas finitos; `K` deve ser comparável | não |
-| `Operation` | operações emitidas (no v0.1, só transferências) | não |
+| Tipo        | Valores                                         | Comparável (§5.4)                     |
+|-------------|-------------------------------------------------|---------------------------------------|
+| `Bool`      | `true`, `false`                                 | `==`, `!=`                            |
+| `Nat`       | naturais de precisão arbitrária                 | ordem total                           |
+| `Tez`       | inteiros de 0 a 2^63−1, em mutez                | ordem total                           |
+| `String`    | sequências de bytes UTF-8                       | ordem total (lexicográfica por bytes) |
+| `Address`   | endereços opacos                                | `==`, `!=`                            |
+| `Timestamp` | segundos desde a época Unix                     | ordem total                           |
+| `Option[T]` | `Some(v)`, `None`                               | não                                   |
+| `List[T]`   | listas finitas                                  | não                                   |
+| `Map[K, V]` | mapas finitos; `K` deve ser comparável          | não                                   |
+| `Operation` | operações emitidas (no v0.1, só transferências) | não                                   |
 
 ### 5.2 Tipos definidos pelo usuário
 
@@ -285,13 +285,13 @@ Observações:
 - **`Storage`**: todo contrato **DEVE** declarar exatamente uma `structure Storage` (E501). Nenhum campo de `Storage` pode conter, direta ou transitivamente, o tipo `Operation` (E504).
 - **`Context`** é um registro embutido com estes campos:
 
-  | Campo | Tipo | Significado |
-  |---|---|---|
-  | `sender` | `Address` | quem chamou o entrypoint |
-  | `amount` | `Tez` | valor enviado junto com a chamada |
-  | `balance` | `Tez` | saldo do contrato **já incluindo** `amount` |
-  | `now` | `Timestamp` | horário do bloco |
-  | `self` | `Address` | endereço do próprio contrato |
+  | Campo     | Tipo        | Significado                                 |
+  |-----------|-------------|---------------------------------------------|
+  | `sender`  | `Address`   | quem chamou o entrypoint                    |
+  | `amount`  | `Tez`       | valor enviado junto com a chamada           |
+  | `balance` | `Tez`       | saldo do contrato **já incluindo** `amount` |
+  | `now`     | `Timestamp` | horário do bloco                            |
+  | `self`    | `Address`   | endereço do próprio contrato                |
 
 - **`Result`** é um registro embutido com dois campos: `ops : List[Operation]` e `storage : Storage`.
 - `Context` e `Result` não podem aparecer em campos de tipos do usuário nem em parâmetros (E504).
@@ -342,7 +342,7 @@ O type checker é **bidirecional**:
 ### 6.3 Regras de síntese (⇒)
 
 | Expressão                                   | Regra                                                                                                                                                                   |
-|---|---|
+|---------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | literais                                    | `true`/`false` ⇒ `Bool`; `NAT` ⇒ `Nat`; `TEZ` ⇒ `Tez`; `STRING` ⇒ `String`; `ADDRESS` ⇒ `Address`                                                                       |
 | `x`                                         | `x : T ∈ Γ` ⇒ `T`; senão E201                                                                                                                                           |
 | `e.f`                                       | `e ⇒ S`, sendo `S` uma structure, `Context` ou `Result` com campo `f : T` ⇒ `T`; senão E204                                                                             |
@@ -368,7 +368,7 @@ Uma comparação cujo operando esquerdo não sintetiza (ex.: `None == x`) gera E
 ### 6.4 Regras de checagem (⇐ T)
 
 | Expressão            | Regra                                                                                                                                            |
-|---|---|
+|----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[]`                 | `T = List[U]`                                                                                                                                    |
 | `None`               | `T = Option[U]`                                                                                                                                  |
 | `Map.empty()`        | `T = Map[K, V]`                                                                                                                                  |
@@ -389,7 +389,7 @@ Uma comparação cujo operando esquerdo não sintetiza (ex.: `None == x`) gera E
 ### 6.6 Aritmética
 
 | Operador | Operandos                | Resultado              | Falha em tempo de execução       |
-|---|---|---|---|
+|----------|--------------------------|------------------------|----------------------------------|
 | `+`      | `Nat, Nat`               | `Nat`                  | —                                |
 | `+`      | `Tez, Tez`               | `Tez`                  | R007 (estouro)                   |
 | `-`      | `Nat, Nat`               | `Nat`                  | R004 se o resultado for negativo |
@@ -510,7 +510,7 @@ O formato de cenários (storage inicial, sequência de chamadas e resultados esp
 ## 9. Biblioteca embutida
 
 | Nome                    | Assinatura                                       | Falha | Observações                                                                        |
-|---|---|---|---|
+|-------------------------|--------------------------------------------------|-------|------------------------------------------------------------------------------------|
 | `transfer`              | `(Address, Tez) → Operation`                     | —     | A falha de saldo acontece só na execução da transação (R006)                       |
 | `fail`                  | `(String) → T` (qualquer tipo; só em modo check) | R003  |                                                                                    |
 | `Some`                  | `(T) → Option[T]`                                | —     | Construtor                                                                         |
@@ -547,7 +547,7 @@ Os diagnósticos são o objeto da pergunta de pesquisa do Gelinton. Por isso, es
 ### 10.1 Registro interno de diagnóstico
 
 | Campo                | Obrigatório   | Conteúdo                                                                                                             |
-|---|---|---|
+|----------------------|---------------|----------------------------------------------------------------------------------------------------------------------|
 | `code`               | sim           | código estável (§10.3); nunca é reutilizado para outro significado                                                   |
 | `severity`           | sim           | `error` ou `warning`                                                                                                 |
 | `message`            | sim           | frase curta em inglês, sem jargão interno do compilador                                                              |
@@ -575,7 +575,7 @@ A forma de chamada (opções de linha de comando) está definida na arquitetura 
 ### 10.3 Catálogo de erros e avisos de compilação
 
 | Código | Categoria     | Condição                                             | Exemplo de mensagem                                                     |
-|---|---|---|---|
+|--------|---------------|------------------------------------------------------|-------------------------------------------------------------------------|
 | E001   | léxico        | caractere inválido                                   | `invalid character '§'`                                                 |
 | E002   | léxico        | string não terminada                                 | `unterminated string literal`                                           |
 | E003   | léxico        | comentário de bloco não terminado                    | `unterminated block comment`                                            |
@@ -619,7 +619,7 @@ A forma de chamada (opções de linha de comando) está definida na arquitetura 
 ### 10.4 Catálogo de falhas em tempo de execução
 
 | Código | Condição                              | Informação obrigatória                             |
-|---|---|---|
+|--------|---------------------------------------|----------------------------------------------------|
 | R001   | `requires` falso                      | entry ou def, índice da cláusula, span da cláusula |
 | R002   | `ensures` falso                       | entry ou def, índice da cláusula, span da cláusula |
 | R003   | `fail(s)`                             | mensagem `s`, span                                 |
@@ -838,7 +838,7 @@ help: add an arm: '| Cancelled => ...'
 Os trechos abaixo supõem um contrato mínimo válido em volta deles: cabeçalho `contract`, `structure Storage` e pelo menos um entry. A lista completa será mantida na suíte de testes.
 
 | Trecho                                                        | Resultado esperado |
-|---|---|
+|---------------------------------------------------------------|--------------------|
 | `entry e() := { ops := [], storage := storage }`              | aceito             |
 | `def f(x : Nat) : Nat := f(x)`                                | E309               |
 | `def g(x : Nat) : Nat := let x := 1 in x`                     | E211               |
@@ -861,7 +861,7 @@ Os trechos abaixo supõem um contrato mínimo válido em volta deles: cabeçalho
 Esta seção não impõe requisitos ao v0.1. Ela serve para garantir que nenhuma decisão do v0.1 impeça o backend futuro.
 
 | JusCore                                         | Michelson                                                                  |
-|---|---|
+|-------------------------------------------------|----------------------------------------------------------------------------|
 | `Bool`, `Nat`, `String`, `Address`, `Timestamp` | `bool`, `nat`, `string`, `address`, `timestamp`                            |
 | `Tez`                                           | `mutez` (por isso o limite de 2^63−1)                                      |
 | `Option[T]`, `List[T]`, `Map[K, V]`             | `option`, `list`, `map` (`big_map` fica para depois)                       |
@@ -882,7 +882,7 @@ Esta seção não impõe requisitos ao v0.1. Ela serve para garantir que nenhuma
 ## 13. Fora do escopo do v0.1
 
 | Recurso                                              | Situação                 | Motivo                                            |
-|---|---|---|
+|------------------------------------------------------|--------------------------|---------------------------------------------------|
 | Chamadas a outros contratos (operação com parâmetro) | v0.2                     | Ver §13.2                                         |
 | Tipo `Int`                                           | LATER · **REVISAR** (D6) | A suíte não precisa; evita conversões `Nat`/`Int` |
 | `Set[T]`, literais de mapa                           | LATER                    | `Map[K, Bool]` resolve no v0.1                    |
@@ -938,15 +938,15 @@ Esta seção não impõe requisitos ao v0.1. Ela serve para garantir que nenhuma
 
 ## 14. Questões abertas
 
-| #  | Questão                                                                                                         | Proposta inicial                                                                                         |
-|---|---|---|
-| Q1 | Permitir `==` sobre `structure` e inductives com campos? É útil em `ensures` (ex.: `result.storage == storage`) | Permitir igualdade estrutural **só** em `requires`/`ensures`, que em Michelson não precisam virar código |
-| Q2 | Sintaxe de chamada `f(a, b)` (adotada) ou aplicação por justaposição `f a b`, como no Lean?                     | Manter `f(a, b)`: é menos ambígua e mais familiar; avaliar no piloto                                     |
-| Q3 | Formato de valores para storage inicial e argumentos nos cenários | **Decidido:** literais e expressões JusCore, num formato de cenário próprio (arquitetura da implementação, §8) |
-| Q4 | `ensures` no backend: assert em tempo de execução ou remoção após verificação?                                  | Decidir com o Sostenes                                                                                   |
-| Q5 | Validar o checksum de endereços no front-end?                                                                   | Não no v0.1                                                                                              |
-| Q6 | Avisar quando um entry aceita tez sem `requires` sobre `ctx.amount`?                                            | Candidato a aviso no v0.2 (risco comum de fundos presos)                                                 |
-| Q7 | Número de colunas em bytes ou em pontos de código Unicode?                                                      | Bytes no v0.1, já que identificadores são ASCII                                                          |
+| #  | Questão                                                                                                         | Proposta inicial                                                                                               |
+|----|-----------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------|
+| Q1 | Permitir `==` sobre `structure` e inductives com campos? É útil em `ensures` (ex.: `result.storage == storage`) | Permitir igualdade estrutural **só** em `requires`/`ensures`, que em Michelson não precisam virar código       |
+| Q2 | Sintaxe de chamada `f(a, b)` (adotada) ou aplicação por justaposição `f a b`, como no Lean?                     | Manter `f(a, b)`: é menos ambígua e mais familiar; avaliar no piloto                                           |
+| Q3 | Formato de valores para storage inicial e argumentos nos cenários                                               | **Decidido:** literais e expressões JusCore, num formato de cenário próprio (arquitetura da implementação, §8) |
+| Q4 | `ensures` no backend: assert em tempo de execução ou remoção após verificação?                                  | Decidir com o Sostenes                                                                                         |
+| Q5 | Validar o checksum de endereços no front-end?                                                                   | Não no v0.1                                                                                                    |
+| Q6 | Avisar quando um entry aceita tez sem `requires` sobre `ctx.amount`?                                            | Candidato a aviso no v0.2 (risco comum de fundos presos)                                                       |
+| Q7 | Número de colunas em bytes ou em pontos de código Unicode?                                                      | Bytes no v0.1, já que identificadores são ASCII                                                                |
 
 ---
 
