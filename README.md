@@ -5,7 +5,7 @@ Definição e implementação de referência do JusCore, uma linguagem funcional
 para smart contracts em Tezos voltada a desenvolvimento agêntico e
 verificável.
 
-- Programa de pesquisa: [jus-lang/jus](https://codeberg.org/jus-lang/jus)
+- Programa de pesquisa: [jus-lang/jus](https://github.com/jus-lang/jus)
 - Definição da linguagem: [docs/juscore-language-definition.md](docs/juscore-language-definition.md)
 - Arquitetura da implementação: [docs/juscore-architecture.md](docs/juscore-architecture.md)
 - Instruções para agentes: [AGENTS.md](AGENTS.md)

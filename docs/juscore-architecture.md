@@ -2,7 +2,7 @@
 
 |                             |                                                                                                                                                       |
 |-----------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Status**                  | Rascunho para discussão (`0.1-draft5`)                                                                                                                |
+| **Status**                  | Rascunho para discussão (`0.1-draft6`)                                                                                                                |
 | **Data**                    | 2026-11-22                                                                                                                                            |
 | **Responsável**             | Jefferson O. Andrade                                                                                                                                  |
 | **Público**                 | Grupo Jus; agentes de IA que irão gerar o código                                                                                                      |
@@ -135,48 +135,81 @@ experimental-features = nix-command flakes
 
 ### 3.2 Integração contínua
 
-**O que é.** A cada `push` ou *pull request*, um serviço externo baixa o repositório, monta o ambiente, roda `dune build` e `dune test`, e publica o resultado (verde ou vermelho) ao lado do commit no Codeberg. Isso garante que nada entra no ramo principal quebrando a suíte de aceitação, venha o código de um agente ou de um humano.
+**O que é.** A cada `push` ou *pull request*, um serviço externo baixa o repositório, monta o ambiente, roda `dune build` e `dune test`, e publica o resultado (verde ou vermelho) ao lado do commit no GitHub. Isso garante que nada entra no ramo principal quebrando a suíte de aceitação, venha o código de um agente ou de um humano.
 
 ```mermaid
 sequenceDiagram
   participant Dev as Gelinton ou agente
-  participant CB as Codeberg
-  participant CI as Woodpecker CI
-  Dev->>CB: push ou pull request
-  CB->>CI: aviso de novo commit
-  CI->>CI: baixa o repositório e monta o ambiente Nix
-  CI->>CI: dune build e dune test
-  CI->>CB: resultado do commit
-  CB->>Dev: status visível no commit e no pull request
+  participant GH as GitHub
+  participant CI as GitHub Actions
+  Dev->>GH: push ou pull request
+  GH->>CI: dispara o workflow
+  CI->>CI: baixa o repositório e instala o Nix
+  CI->>CI: nix develop, dune build e dune test
+  CI->>GH: resultado do commit
+  GH->>Dev: status visível no commit e no pull request
 ```
 
-**Opções no Codeberg:**
+**Plataforma.** Os repositórios ficam no GitHub, na organização `jus-lang`. Até 2026-11-22 estavam no Codeberg, mas os termos de uso do Codeberg, desde julho de 2026, não admitem projetos compostos majoritariamente de código escrito por ferramentas de IA generativa. É exatamente o caso planejado para o `juscore` (§11). A CI usa o GitHub Actions, que dispensa pedido de acesso e é gratuito para repositórios públicos nos executores padrão.
 
-| Opção                                 | Como funciona                                                                                                          | Situação                                                                                                                                                 |
-|---------------------------------------|------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Woodpecker CI** (`ci.codeberg.org`) | Hospedado pelo Codeberg. Configurado por um arquivo `.woodpecker/*.yaml` no repositório. Cada passo roda num contêiner | Exige pedir acesso por formulário; depois de aprovado, ativa-se o repositório em `ci.codeberg.org`. É a opção que o Codeberg recomenda para CI hospedada |
-| **Forgejo Actions**                   | Sintaxe parecida com a do GitHub Actions, em `.forgejo/workflows/*.yml`                                                | O Codeberg oferece executores hospedados só de forma limitada. A alternativa é registrar um executor próprio (por exemplo, numa máquina do laboratório)  |
-
-**Proposta:** pedir acesso ao Woodpecker do Codeberg; se o acesso demorar, o plano B é um executor Forgejo próprio.
-
-**Mesmo ambiente na CI.** O passo da CI roda numa imagem oficial do Nix e usa o mesmo `flake.nix` e o mesmo `flake.lock`:
+**Mesmo ambiente na CI.** O workflow instala o Nix e usa o mesmo `flake.nix` e o mesmo `flake.lock` do desenvolvimento:
 
 ```yaml
-# .woodpecker/ci.yaml
-when:
-  - event: [push, pull_request]
+# .github/workflows/ci.yml
+name: CI
 
-steps:
-  - name: build-and-test
-    image: nixos/nix:<versão fixada>
-    environment:
-      NIX_CONFIG: "experimental-features = nix-command flakes"
-    commands:
-      - nix develop --command dune build
-      - nix develop --command dune test
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: cachix/install-nix-action@v31
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+      - run: nix develop --command dune build
+      - run: nix develop --command dune test
 ```
 
-A cada execução, o Nix baixa os pacotes do cache binário. Para um projeto deste tamanho, isso basta. Se o tempo de CI incomodar, a evolução natural é gerar uma imagem pronta a partir do próprio flake (`dockerTools` do nixpkgs) e publicá-la no registro de contêineres do Codeberg.
+O `install-nix-action` já habilita flakes. O `github_access_token` evita o limite de requisições anônimas ao GitHub quando o Nix baixa as entradas do flake. As versões das *actions* são mantidas pelo Dependabot:
+
+```yaml
+# .github/dependabot.yml
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+```
+
+A cada execução, o Nix baixa os pacotes do cache binário do NixOS. Para um projeto deste tamanho, isso basta. Se o tempo de CI incomodar, a evolução natural é guardar o *store* do Nix no cache do GitHub Actions (por exemplo, com `nix-community/cache-nix-action`) ou usar um cache Cachix.
+
+**Proteção dos testes de conformidade.** O GitHub permite transformar em regra a primeira instrução do `AGENTS.md` (§11.4): agentes não alteram `test/conformance/` nem `test/contracts/` sem aprovação humana. Duas peças fazem isso:
+
+1. um arquivo `.github/CODEOWNERS` atribui esses diretórios ao Jefferson e ao Gelinton:
+
+   ```text
+   # .github/CODEOWNERS
+   /test/conformance/  @<usuário-jefferson> @<usuário-gelinton>
+   /test/contracts/    @<usuário-jefferson> @<usuário-gelinton>
+   ```
+
+2. uma regra (*ruleset*) para o ramo `main` exige:
+   - *pull request* para qualquer mudança;
+   - CI verde (`build-and-test`);
+   - revisão de um *code owner* quando o *pull request* toca os diretórios acima.
+
+Mudanças fora desses diretórios continuam precisando só da CI verde. O Jefferson, como administrador, pode contornar a regra em emergências.
+
+O GitHub não deixa o autor de um *pull request* aprová-lo. Se os agentes trabalharem com a conta do Gelinton, a aprovação de mudanças nos testes cabe ao Jefferson, o que pesa durante a viagem. A configuração exata é decidida no M0, quando a regra for ativada junto com o primeiro workflow.
 
 ---
 
@@ -189,7 +222,10 @@ juscore/
 ├── AGENTS.md                  instruções para agentes (§11.4)
 ├── flake.nix                  ambiente de desenvolvimento (§3.1)
 ├── flake.lock                 revisão fixada do nixpkgs (§3.1)
-├── .woodpecker/ci.yaml        integração contínua (§3.2)
+├── .github/
+│   ├── workflows/ci.yml       integração contínua (§3.2)
+│   ├── dependabot.yml         atualização das actions (§3.2)
+│   └── CODEOWNERS             revisão obrigatória dos testes de conformidade (§3.2)
 ├── dune-project
 ├── bin/
 │   └── main.ml                CLI (Cmdliner)
@@ -725,9 +761,9 @@ Regras:
 
 | #  | Questão                                                       | Situação                                                                                                                                                                                                                                                                                                                  |
 |----|---------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| A1 | Onde fica o repositório da implementação                      | **Decidido:** `codeberg.org/jus-lang/juscore`, um único repositório para toda a implementação (front-end, interpretador e, depois, backend), com os documentos normativos em `docs/`. O repositório `jus-lang/interpreter` é arquivado como legado (§13). A organização geral dos repositórios está no README do programa |
+| A1 | Onde fica o repositório da implementação                      | **Decidido:** `github.com/jus-lang/juscore`, um único repositório para toda a implementação (front-end, interpretador e, depois, backend), com os documentos normativos em `docs/`. O repositório `jus-lang/interpreter` é arquivado como legado (§13). Os repositórios migraram do Codeberg para o GitHub em 2026-11-22 (§3.2). A organização geral dos repositórios está no README do programa |
 | A2 | Versão exata do OCaml e das dependências                      | **Decidido:** OCaml 5, com o ambiente em Nix com flakes; versões fixadas pelo `flake.lock` (§3.1)                                                                                                                                                                                                                         |
-| A3 | Integração contínua                                           | **Decidido em princípio:** Woodpecker do Codeberg, com imagem oficial do Nix (§3.2); plano B: executor Forgejo próprio                                                                                                                                                                                                    |
+| A3 | Integração contínua                                           | **Decidido:** GitHub Actions com `cachix/install-nix-action` e o mesmo flake (§3.2); ruleset e CODEOWNERS protegem `main` e os testes de conformidade |
 | A4 | Ferramenta de agente usada na geração                         | A decidir na reunião com o Gelinton (terça-feira, 2026-11-24)                                                                                                                                                                                                                                                             |
 | A5 | Executar Michelson fora da blockchain nos testes diferenciais | **Decidido:** avaliar quando o backend começar                                                                                                                                                                                                                                                                            |
 | A6 | Recuperação de erros de sintaxe                               | **Decidido:** depois do v0.1, se os experimentos mostrarem que importa                                                                                                                                                                                                                                                    |
@@ -738,7 +774,7 @@ Regras:
 
 ## 13. Protótipo legado em Java
 
-Análise do snapshot de `codeberg.org/jus-lang/interpreter` feita em 2026-11-22. Houve outra versão do interpretador, criada para um projeto específico, que se perdeu. O snapshot do Codeberg é a única versão disponível, e é a ela que esta seção se refere.
+Análise do snapshot de `jus-lang/interpreter` feita em 2026-11-22, quando o repositório ainda estava no Codeberg. Houve outra versão do interpretador, criada para um projeto específico, que se perdeu. Esse snapshot é a única versão disponível, e é a ela que esta seção se refere.
 
 **O que existe:**
 
@@ -769,7 +805,7 @@ Praticamente nenhuma decisão de design coincide com a definição do JusCore v0
 **Recomendação:**
 
 - não reaproveitar código;
-- arquivar o repositório no Codeberg, o que preserva o histórico e a autoria da Larissa;
+- arquivar o repositório, o que preserva o histórico e a autoria da Larissa (feito no Codeberg em 2026-11-22; o repositório migra arquivado para o GitHub);
 - acrescentar ao README do repositório antigo um aviso apontando para o novo;
 - copiar a gramática e os dois contratos para `docs/legacy/` do novo repositório, como referência histórica e como origem dos casos motivadores (definição §11.4).
 
@@ -782,3 +818,4 @@ Praticamente nenhuma decisão de design coincide com a definição do JusCore v0
 - `0.1-draft3` (2026-11-22): Guix substituído por Nix com flakes, com OCaml 5 (§3.1); CI com imagem do Nix (§3.2); A1 decidida (um repositório para toda a implementação); nova questão A8.
 - `0.1-draft4` (2026-11-22): A8 decidida (OCaml 5.4); `Code.explanation` acrescentado para a variante D3 do protocolo experimental.
 - `0.1-draft5` (2026-11-22): caminhos dos documentos corrigidos no `AGENTS.md` (§11.4); registro de que outra versão do interpretador, usada num projeto específico, se perdeu (§13).
+- `0.1-draft6` (2026-11-22): repositórios migrados do Codeberg para o GitHub; CI no GitHub Actions, com Dependabot, CODEOWNERS e ruleset para os testes de conformidade (§3.2, §4); A1 e A3 atualizadas (§12).
