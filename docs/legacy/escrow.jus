@@ -1,0 +1,34 @@
+contract EscrowContract where
+    structure Transaction where
+        buyer : Address
+        seller : Address
+        amount : Nat
+        description : String
+
+    inductive State where
+        | AwaitingPayment : State
+        | AwaitingDelivery : State
+        | Complete : State
+        | Cancelled : State
+
+    inductive Event where
+        | PaymentMade : Event
+        | DeliveryConfirmed : Event
+        | CancelTransaction : Event
+
+    def checkPayment(amount : Nat) : Bool :=
+        if (amount > 0) then true else false
+
+    def confirmDelivery(status : String) : Bool :=
+        if (status == "delivered") then true else false
+
+    def update(state : State, event : Event, transaction: Transaction) : State :=
+        match(state, event) with
+        | (AwaitingPayment, PaymentMade) => 
+            if (checkPayment(transaction.amount)) then AwaitingDelivery else AwaitingPayment
+        | (AwaitingDelivery, DeliveryConfirmed) => 
+            if (confirmDelivery("delivered")) then Complete else AwaitingDelivery
+        | (AwaitingPayment, CancelTransaction) => Cancelled
+        | (AwaitingDelivery, CancelTransaction) => Cancelled
+        | (_, _) => state
+

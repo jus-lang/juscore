@@ -1,0 +1,33 @@
+contract TimeLockVault where
+    structure Vault where
+        balance: Nat
+        unlockTime: Nat
+        owner: Address
+
+    inductive State where
+        | Locked: State
+        | Unlocked: State
+        | Claimed: State
+
+    inductive Event where
+        | CheckUnlock : Event
+        | Withdraw : Event
+
+    def isUnlocked(vault: Vault, currentTime: Nat): Bool := 
+        if (currentTime >= vault.unlockTime) then true else false
+
+    def isOwner(vault: Vault, sender: Address): Bool :=
+        if (vault.owner == sender) then true else false
+
+    def canWithdraw(vault: Vault, sender: Address, currentState: State): Bool := 
+        if (currentState == Unlocked) then
+            if (isOwner(vault, sender)) then true else false
+        else
+            false
+
+    def update(state: State, event: Event, vault: Vault, currentTime: Nat): State :=
+        match(state, event) with
+        | (Locked, CheckUnlock) => 
+            if (isUnlocked(vault, currentTime)) then Unlocked else Locked
+        | (Unlocked, Withdraw) => Claimed
+        | (_, _) => state
