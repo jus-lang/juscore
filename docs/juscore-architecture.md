@@ -2,7 +2,7 @@
 
 |                             |                                                                                                                                                       |
 |-----------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Status**                  | Rascunho para discussão (`0.1-draft4`)                                                                                                                |
+| **Status**                  | Rascunho para discussão (`0.1-draft5`)                                                                                                                |
 | **Data**                    | 2026-11-22                                                                                                                                            |
 | **Responsável**             | Jefferson O. Andrade                                                                                                                                  |
 | **Público**                 | Grupo Jus; agentes de IA que irão gerar o código                                                                                                      |
@@ -738,7 +738,7 @@ Regras:
 
 ## 13. Protótipo legado em Java
 
-Análise do snapshot de `codeberg.org/jus-lang/interpreter` feita em 2026-11-22.
+Análise do snapshot de `codeberg.org/jus-lang/interpreter` feita em 2026-11-22. Houve outra versão do interpretador, criada para um projeto específico, que se perdeu. O snapshot do Codeberg é a única versão disponível, e é a ela que esta seção se refere.
 
 **O que existe:**
 
@@ -781,3 +781,4 @@ Praticamente nenhuma decisão de design coincide com a definição do JusCore v0
 - `0.1-draft2` (2026-11-22): ambiente com GNU Guix e OCaml 4.14 (§3.1); integração contínua (§3.2); questões A1–A7 atualizadas (§12); análise do protótipo legado em Java (§13).
 - `0.1-draft3` (2026-11-22): Guix substituído por Nix com flakes, com OCaml 5 (§3.1); CI com imagem do Nix (§3.2); A1 decidida (um repositório para toda a implementação); nova questão A8.
 - `0.1-draft4` (2026-11-22): A8 decidida (OCaml 5.4); `Code.explanation` acrescentado para a variante D3 do protocolo experimental.
+- `0.1-draft5` (2026-11-22): caminhos dos documentos corrigidos no `AGENTS.md` (§11.4); registro de que outra versão do interpretador, usada num projeto específico, se perdeu (§13).

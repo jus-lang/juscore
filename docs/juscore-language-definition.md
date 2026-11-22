@@ -2,7 +2,7 @@
 
 |                             |                                                                                                                              |
 |-----------------------------|------------------------------------------------------------------------------------------------------------------------------|
-| **Status**                  | Rascunho para discussão (`0.1-draft3`)                                                                                       |
+| **Status**                  | Rascunho para discussão (`0.1-draft4`)                                                                                       |
 | **Data**                    | 2026-11-22                                                                                                                   |
 | **Responsável**             | Jefferson O. Andrade                                                                                                         |
 | **Público**                 | Grupo Jus; agentes de IA que irão gerar o front-end e o interpretador                                                        |
@@ -12,7 +12,7 @@
 
 ## 0. Como ler este documento
 
-Este documento é **normativo** para o front-end (lexer, parser, type checker) e para o interpretador de referência do JusCore v0.1. O artigo WorldCIST 2025 e o trabalho de 2025 sobre Jus são documentos de visão e **não** valem como especificação.
+Este documento é **normativo** para o front-end (lexer, parser, type checker) e para o interpretador de referência do JusCore v0.1. Os artigos da WorldCIST 2025 e da CHILECON 2025 e o trabalho de 2025 sobre Jus são documentos de visão e **não** valem como especificação.
 
 Convenções:
 
@@ -701,10 +701,11 @@ entry withdraw()
 
 > **Nota:** a pós-condição natural de `deposit` seria `ensures result.storage == storage`, mas `Storage` não é comparável (§5.4), e essa cláusula geraria E302. Por isso o contrato usa `result.storage.state == storage.state`. Ver Q1 na §14.
 
-Em relação ao contrato legado, mudou o seguinte:
+Em relação às versões legadas do contrato, mudou o seguinte:
 
 - o estado `Unlocked` foi eliminado, porque ele é derivado do tempo;
-- o dono passa a ser checado;
+- o horário vem do contexto da execução (`ctx.now`), e não de um parâmetro da transição;
+- o dono passa a ser checado (na versão do trabalho de 2025 e do repositório `interpreter`, não era; na do artigo da CHILECON 2025, era);
 - os fundos passam a ser efetivamente transferidos;
 - o envio de tez junto com `withdraw` é proibido.
 
@@ -955,3 +956,4 @@ Esta seção não impõe requisitos ao v0.1. Ela serve para garantir que nenhuma
 - `0.1-draft1` (2026-11-22): primeira versão completa para discussão.
 - `0.1-draft2` (2026-11-22): registro das decisões validadas (§1.4); D4–D6 marcadas para revisão; nova §13.2 sobre chamadas a outros contratos no v0.2; divergência sobre `Int` registrada na §13.1.
 - `0.1-draft3` (2026-11-22): terminologia alinhada com a arquitetura da implementação; Q3 decidida (formato de cenários); recuperação de erros léxicos e de sintaxe flexibilizada no v0.1 (§10.2).
+- `0.1-draft4` (2026-11-22): artigo da CHILECON 2025 incluído entre os documentos de visão (§0); diferenças em relação às versões legadas do TimeLockVault precisadas (§11.1).
