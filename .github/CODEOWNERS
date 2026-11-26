@@ -1,0 +1,7 @@
+# Mudanças nestes caminhos exigem aprovação humana (AGENTS.md, regra 1)
+/test/conformance/  @profjeffandrade @pcesc
+/test/contracts/    @profjeffandrade @pcesc
+/.github/           @profjeffandrade @pcesc
+/AGENTS.md          @profjeffandrade @pcesc
+/flake.nix          @profjeffandrade @pcesc
+/flake.lock         @profjeffandrade @pcesc

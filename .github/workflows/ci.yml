@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: cachix/install-nix-action@v31
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Ambiente
+        run: nix develop --command sh -c 'ocaml -version && dune --version'
+      - name: Build
+        if: hashFiles('dune-project') != ''
+        run: nix develop --command dune build
+      - name: Testes
+        if: hashFiles('dune-project') != ''
+        run: nix develop --command dune test
